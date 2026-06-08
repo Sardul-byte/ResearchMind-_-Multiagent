@@ -56,6 +56,8 @@ http://localhost:8501
 
 This project is ready to deploy on platforms that support Streamlit apps. Keep the `.env` file local and use environment variables in your deployment platform for API keys.
 
+Live demo: [ResearchMind · AI Research Agent · Streamlit](https://researchmind--multiagent-kb2iju3snceeiyadkryrka.streamlit.app/)
+
 ## Notes
 
 - `.env` is included in `.gitignore` to protect secrets.
