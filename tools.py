@@ -13,8 +13,15 @@ load_dotenv(_env_path, override=True)
 def get_tavily_client() -> TavilyClient:
     api_key = os.getenv("TAVILY_API_KEY")
     if not api_key:
+        try:
+            import streamlit as st
+            api_key = st.secrets.get("TAVILY_API_KEY")
+        except Exception:
+            pass
+
+    if not api_key:
         raise EnvironmentError(
-            "Missing TAVILY_API_KEY. Set it in .env or the environment before running."
+            "Missing TAVILY_API_KEY. Set it in .env, Streamlit Secrets, or environment variables before running."
         )
     return TavilyClient(api_key=api_key)
 

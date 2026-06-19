@@ -12,8 +12,15 @@ load_dotenv(_env_path, override=True)
 def get_llm_client() -> genai.Client:
     api_key = os.getenv("GOOGLE_GENAI_API_KEY")
     if not api_key:
+        try:
+            import streamlit as st
+            api_key = st.secrets.get("GOOGLE_GENAI_API_KEY")
+        except Exception:
+            pass
+            
+    if not api_key:
         raise EnvironmentError(
-            "Missing GOOGLE_GENAI_API_KEY. Set it in .env or the environment before running."
+            "Missing GOOGLE_GENAI_API_KEY. Set it in .env, Streamlit Secrets, or environment variables before running."
         )
     return genai.Client(api_key=api_key)
 
@@ -35,7 +42,7 @@ def _extract_response_text(response: genai.types.GenerateContentResponse) -> str
     return str(response)
 
 
-def _send_prompt(prompt: str, model: str = "gemini-2.0-flash") -> str:
+def _send_prompt(prompt: str, model: str = "gemini-2.5-flash") -> str:
     client = get_llm_client()
     chat = client.chats.create(model=model)
     response = chat.send_message(prompt)
