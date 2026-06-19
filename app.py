@@ -41,8 +41,15 @@ video_html = """
     object-fit: cover;
     pointer-events: none;
 }
-/* Make Streamlit's main container transparent */
-.stApp {
+/* Make Streamlit's main containers transparent */
+.stApp,
+[data-testid="stAppViewContainer"],
+[data-testid="stHeader"],
+[data-testid="stMain"],
+.main,
+.block-container,
+[data-testid="stApp"] {
+    background: transparent !important;
     background-color: transparent !important;
 }
 
@@ -258,10 +265,31 @@ body {
 
 <!-- Global cursor glow & trailing script -->
 <script>
+let doc = document;
+let win = window;
 try {
-  const doc = window.parent !== window ? window.parent.document : document;
-  const win = window.parent !== window ? window.parent : window;
-  
+  if (window.parent && window.parent.document) {
+    doc = window.parent.document;
+    win = window.parent;
+  }
+} catch (err) {
+  console.log("Cross-origin frame error handled. Falling back to local document.");
+  doc = document;
+  win = window;
+}
+
+try {
+  // Ensure video background is playing
+  const video = doc.getElementById('bg-video');
+  if (video) {
+    video.play().catch(err => {
+      console.log('Video autoplay blocked, will attempt to play on first user interaction');
+      doc.addEventListener('click', () => {
+        video.play();
+      }, { once: true });
+    });
+  }
+
   let glow = doc.getElementById('cyber-glow-pointer');
   if (!glow) {
     glow = doc.createElement('div');
