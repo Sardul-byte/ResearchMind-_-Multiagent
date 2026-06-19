@@ -1,4 +1,5 @@
 import os
+import time
 import re
 from pathlib import Path
 from dotenv import load_dotenv
@@ -44,9 +45,20 @@ def _extract_response_text(response: genai.types.GenerateContentResponse) -> str
 
 def _send_prompt(prompt: str, model: str = "gemini-2.5-flash") -> str:
     client = get_llm_client()
-    chat = client.chats.create(model=model)
-    response = chat.send_message(prompt)
-    return _extract_response_text(response)
+    last_error = None
+    for attempt in range(3):
+        try:
+            chat = client.chats.create(model=model)
+            response = chat.send_message(prompt)
+            return _extract_response_text(response)
+        except Exception as e:
+            last_error = e
+            # If it's a 503 or 429 error, wait and retry
+            if "503" in str(e) or "429" in str(e):
+                time.sleep(2 * (attempt + 1))
+                continue
+            raise e
+    raise last_error
 
 
 class SimpleAgent:
