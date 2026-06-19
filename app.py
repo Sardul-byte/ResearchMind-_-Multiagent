@@ -11,206 +11,100 @@ from agents import (
 
 # ── Page config ──────────────────────────────────────────────────────────────
 st.set_page_config(
-    page_title="ResearchMind · Autonomous Agent Terminal",
-    page_icon="🔬",
+    page_title="ResearchMind Terminal",
+    page_icon="🤖",
     layout="wide",
     initial_sidebar_state="collapsed",
 )
 
-# ── Custom CSS, Background Video, and Cursor Glow ─────────────────────────────
-st.markdown("""
+# ── Rogue Cyberpunk UI Hijack Injections ──────────────────────────────────────
+hide_st_style = """
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700;1,300&display=swap');
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
+header {visibility: hidden;}
+.stApp {background: transparent !important;}
+</style>
+"""
+st.markdown(hide_st_style, unsafe_allow_html=True)
 
-/* Reset background of standard streamlit containers to keep background video visible */
-.stApp, [data-testid="stAppViewContainer"], [data-testid="stHeader"], [data-testid="stMain"] {
-    background: transparent !important;
-}
-
-body {
-    font-family: 'DM Sans', sans-serif;
-    color: #eef6ff;
-}
-
-/* Background video */
+video_html = """
+<style>
 #bg-video {
     position: fixed;
     right: 0;
     bottom: 0;
-    min-width: 100%;
+    min-width: 100%; 
     min-height: 100%;
-    width: auto;
-    height: auto;
     z-index: -100;
+    filter: brightness(0.25); /* Darken video for text readability */
     object-fit: cover;
-    opacity: 0.35;
     pointer-events: none;
 }
-
-#bg-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: radial-gradient(circle at center, rgba(7, 18, 31, 0.7) 0%, rgba(3, 8, 15, 0.94) 100%);
-    z-index: -99;
-    pointer-events: none;
+/* Make Streamlit's main container transparent */
+.stApp {
+    background-color: transparent !important;
 }
 
-/* Custom scrollbars */
-::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-}
-::-webkit-scrollbar-track {
-    background: rgba(10, 25, 47, 0.3);
-}
-::-webkit-scrollbar-thumb {
-    background: rgba(0, 240, 255, 0.3);
-    border-radius: 4px;
-}
-::-webkit-scrollbar-thumb:hover {
-    background: rgba(0, 240, 255, 0.6);
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Mono:wght@400;700&family=DM+Sans:wght@400;700&display=swap');
+
+body {
+    font-family: 'DM Sans', sans-serif;
+    color: #e0e8f5;
 }
 
-/* Hide Streamlit default UI elements */
-#MainMenu, footer, header { visibility: hidden; }
-.block-container { padding: 1.5rem 3rem 2rem; max-width: 1300px; }
-
-/* ── Hero Header ── */
-.hero {
-    text-align: center;
-    padding: 2rem 0 1.5rem;
-    position: relative;
-}
-.hero-eyebrow {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.75rem;
-    font-weight: 700;
-    letter-spacing: 0.35em;
-    text-transform: uppercase;
-    color: #00f0ff;
-    margin-bottom: 0.5rem;
-    text-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
-}
-.hero h1 {
+/* Custom hacker command terminal styles */
+.terminal-title {
     font-family: 'Syne', sans-serif;
-    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-size: clamp(2.5rem, 5vw, 4.5rem);
     font-weight: 800;
-    line-height: 1.0;
-    letter-spacing: -0.02em;
-    color: #eef6ff;
-    margin: 0 0 0.5rem;
-}
-.hero h1 span {
+    text-align: center;
     color: #00f0ff;
-    text-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
+    text-shadow: 0 0 20px rgba(0, 240, 255, 0.6);
+    margin-bottom: 0.5rem;
 }
-.hero-sub {
-    font-size: 1.0rem;
-    font-weight: 300;
-    color: #a0aec0;
-    max-width: 600px;
-    margin: 0 auto;
-    line-height: 1.6;
-}
-
-/* Divider */
-.divider {
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.3), transparent);
-    margin: 1.5rem 0;
+.terminal-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.8rem;
+    text-align: center;
+    letter-spacing: 0.4em;
+    color: #ff007f;
+    text-transform: uppercase;
+    text-shadow: 0 0 10px rgba(255, 0, 127, 0.4);
 }
 
-/* Glassmorphism Containers */
 .glass-card {
-    background: rgba(10, 25, 47, 0.6) !important;
-    border: 1px solid rgba(0, 240, 255, 0.15) !important;
+    background: rgba(5, 12, 24, 0.7) !important;
+    border: 1px solid rgba(0, 240, 255, 0.25) !important;
     border-radius: 16px !important;
     padding: 2rem !important;
-    backdrop-filter: blur(16px) saturate(180%) !important;
-    -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37), inset 0 0 10px rgba(0, 240, 255, 0.03) !important;
-    margin-bottom: 1.5rem !important;
-    transition: all 0.3s ease !important;
-}
-.glass-card:hover {
-    border-color: rgba(0, 240, 255, 0.3) !important;
-    box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.45), inset 0 0 15px rgba(0, 240, 255, 0.05) !important;
+    backdrop-filter: blur(20px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+    box-shadow: 0 0 30px rgba(0, 240, 255, 0.15), inset 0 0 15px rgba(0, 240, 255, 0.05) !important;
+    margin-bottom: 2rem !important;
 }
 
-/* Input Fields overrides */
-.stTextInput > div > div > input {
-    background: rgba(10, 25, 47, 0.7) !important;
-    border: 1px solid rgba(0, 240, 255, 0.2) !important;
-    border-radius: 8px !important;
-    color: #eef6ff !important;
-    font-family: 'DM Sans', sans-serif !important;
-    font-size: 1rem !important;
-    padding: 0.75rem 1rem !important;
-    transition: all 0.3s ease !important;
-}
-.stTextInput > div > div > input:focus {
-    border-color: #00f0ff !important;
-    box-shadow: 0 0 12px rgba(0, 240, 255, 0.3) !important;
-}
-.stTextInput > label {
-    font-family: 'DM Mono', monospace !important;
-    font-size: 0.75rem !important;
-    letter-spacing: 0.15em !important;
-    text-transform: uppercase !important;
-    color: #00f0ff !important;
-    font-weight: 700 !important;
-    text-shadow: 0 0 5px rgba(0, 240, 255, 0.3);
-}
-
-/* Futuristic Neo-Cyber Buttons */
-.stButton > button {
-    background: linear-gradient(135deg, #00f0ff 0%, #7000ff 100%) !important;
-    color: #ffffff !important;
-    border: none !important;
-    font-family: 'Syne', sans-serif !important;
-    font-weight: 800 !important;
-    text-transform: uppercase !important;
-    letter-spacing: 0.15em !important;
-    box-shadow: 0 0 15px rgba(0, 240, 255, 0.3) !important;
-    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5) !important;
-    border-radius: 8px !important;
-    padding: 0.75rem 2rem !important;
-    width: 100%;
-    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
-}
-.stButton > button:hover {
-    transform: translateY(-2px) scale(1.01) !important;
-    box-shadow: 0 0 25px rgba(0, 240, 255, 0.6), 0 0 40px rgba(112, 0, 255, 0.3) !important;
-    color: #ffffff !important;
-}
-.stButton > button:active {
-    transform: translateY(0) !important;
-}
-
-/* Agent cards formatting */
+/* Custom active agent glowing panels */
 .agent-card {
-    background: rgba(10, 25, 47, 0.5) !important;
+    background: rgba(5, 12, 24, 0.65) !important;
     border: 1px solid rgba(255, 255, 255, 0.08) !important;
     border-radius: 12px !important;
     padding: 1.25rem 1.5rem !important;
     margin-bottom: 1rem !important;
-    backdrop-filter: blur(8px) !important;
+    backdrop-filter: blur(10px) !important;
     transition: all 0.4s ease !important;
 }
 .agent-card.running {
     border-color: #00f0ff !important;
-    box-shadow: 0 0 15px rgba(0, 240, 255, 0.25), inset 0 0 10px rgba(0, 240, 255, 0.05) !important;
-    transform: translateX(5px) !important;
+    box-shadow: 0 0 20px rgba(0, 240, 255, 0.3), inset 0 0 10px rgba(0, 240, 255, 0.1) !important;
+    transform: scale(1.02) translateX(5px) !important;
 }
 .agent-card.done {
     border-color: #39ff14 !important;
-    box-shadow: 0 0 10px rgba(57, 255, 20, 0.15) !important;
+    box-shadow: 0 0 15px rgba(57, 255, 20, 0.25) !important;
 }
 .agent-card.waiting {
-    opacity: 0.55 !important;
+    opacity: 0.5;
 }
 .agent-card-header {
     display: flex !important;
@@ -220,25 +114,29 @@ body {
 .agent-num {
     font-family: 'DM Mono', monospace !important;
     font-size: 0.85rem !important;
+    color: #ff007f !important;
     font-weight: 700 !important;
-    color: #00f0ff !important;
-    opacity: 0.85 !important;
 }
 .agent-title {
     font-family: 'Syne', sans-serif !important;
-    font-size: 1.05rem !important;
-    font-weight: 700 !important;
+    font-size: 1.1rem !important;
+    font-weight: 700;
     color: #eef6ff !important;
 }
-.agent-icon-wrap {
+.agent-status-tag {
     margin-left: auto !important;
-    display: flex !important;
-    align-items: center !important;
-    gap: 0.5rem !important;
     font-family: 'DM Mono', monospace !important;
     font-size: 0.75rem !important;
     font-weight: 700 !important;
     letter-spacing: 0.05em !important;
+}
+.agent-card.running .agent-status-tag {
+    color: #00f0ff !important;
+    animation: blink 1s infinite alternate;
+}
+.agent-card.done .agent-status-tag {
+    color: #39ff14 !important;
+    text-shadow: 0 0 8px rgba(57, 255, 20, 0.6);
 }
 .agent-desc {
     font-size: 0.85rem !important;
@@ -246,9 +144,83 @@ body {
     margin-top: 0.4rem !important;
     line-height: 1.5 !important;
 }
-.neon-spinner {
-    width: 12px;
-    height: 12px;
+
+@keyframes blink {
+    from { opacity: 0.4; }
+    to { opacity: 1; }
+}
+
+/* Custom glowing outputs */
+.output-card-writer {
+    background: rgba(5, 12, 24, 0.75) !important;
+    border: 1px solid rgba(0, 240, 255, 0.35) !important;
+    border-radius: 16px !important;
+    padding: 2.5rem !important;
+    box-shadow: 0 0 35px rgba(0, 240, 255, 0.2) !important;
+    margin-top: 2rem !important;
+}
+.output-card-critic {
+    background: rgba(5, 12, 24, 0.75) !important;
+    border: 1px solid rgba(57, 255, 20, 0.35) !important;
+    border-radius: 16px !important;
+    padding: 2.5rem !important;
+    box-shadow: 0 0 35px rgba(57, 255, 20, 0.2) !important;
+    margin-top: 2rem !important;
+}
+.output-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Streamlit Input fields & buttons */
+.stTextInput > div > div > input {
+    background: rgba(5, 12, 24, 0.8) !important;
+    border: 1px solid rgba(0, 240, 255, 0.3) !important;
+    border-radius: 8px !important;
+    color: #eef6ff !important;
+    font-family: 'DM Sans', sans-serif !important;
+    transition: all 0.3s ease !important;
+}
+.stTextInput > div > div > input:focus {
+    border-color: #00f0ff !important;
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.4) !important;
+}
+.stTextInput > label {
+    font-family: 'DM Mono', monospace !important;
+    font-size: 0.75rem !important;
+    letter-spacing: 0.2em !important;
+    text-transform: uppercase !important;
+    color: #00f0ff !important;
+}
+
+.stButton > button {
+    background: linear-gradient(135deg, #00f0ff 0%, #ff007f 100%) !important;
+    color: #ffffff !important;
+    border: none !important;
+    font-family: 'Syne', sans-serif !important;
+    font-weight: 800 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.2em !important;
+    box-shadow: 0 0 20px rgba(0, 240, 255, 0.4) !important;
+    border-radius: 8px !important;
+    padding: 0.75rem 2rem !important;
+    transition: all 0.3s ease !important;
+}
+.stButton > button:hover {
+    transform: translateY(-2px) scale(1.02) !important;
+    box-shadow: 0 0 35px rgba(0, 240, 255, 0.7), 0 0 50px rgba(255, 0, 127, 0.4) !important;
+}
+
+/* Spinner anim */
+.hacker-spinner {
+    width: 14px;
+    height: 14px;
     border: 2px solid rgba(0, 240, 255, 0.2);
     border-top: 2px solid #00f0ff;
     border-radius: 50%;
@@ -259,116 +231,46 @@ body {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
-.neon-checkmark {
-    font-size: 1rem;
-    font-weight: 900;
-    color: #39ff14;
-    text-shadow: 0 0 5px rgba(57, 255, 20, 0.8);
+
+.pulse-completed {
+    animation: pulse 1s infinite alternate;
+    font-weight: bold;
 }
-.neon-dot {
-    font-size: 1.2rem;
-    color: rgba(255, 255, 255, 0.3);
+@keyframes pulse {
+    0% { text-shadow: 0 0 5px rgba(57, 255, 20, 0.5); }
+    100% { text-shadow: 0 0 15px rgba(57, 255, 20, 0.9); }
 }
 
-/* Results Formatting */
-.section-heading {
-    font-family: 'Syne', sans-serif;
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #eef6ff;
-    margin: 2rem 0 1rem;
-    text-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
-}
-.result-panel {
-    background: rgba(10, 25, 47, 0.4);
-    border: 1px solid rgba(0, 240, 255, 0.15);
-    border-radius: 12px;
-    padding: 1.5rem;
-    backdrop-filter: blur(10px);
-}
-.result-panel-title {
+.notice-footer {
     font-family: 'DM Mono', monospace;
-    font-size: 0.8rem;
-    font-weight: 700;
-    letter-spacing: 0.15em;
-    color: #00f0ff;
-    text-transform: uppercase;
-    border-bottom: 1px solid rgba(0, 240, 255, 0.15);
-    padding-bottom: 0.5rem;
-    margin-bottom: 1rem;
-}
-.result-content {
-    font-family: 'DM Sans', sans-serif;
-    font-size: 0.9rem;
-    color: #d1dbed;
-    line-height: 1.6;
-    white-space: pre-wrap;
-}
-
-.report-panel {
-    background: rgba(10, 25, 47, 0.65) !important;
-    border: 1px solid rgba(0, 240, 255, 0.25) !important;
-    box-shadow: 0 8px 32px 0 rgba(0, 240, 255, 0.1) !important;
-    border-radius: 16px;
-    padding: 2.5rem;
-    margin-top: 1.5rem;
-    backdrop-filter: blur(16px);
-}
-.feedback-panel {
-    background: rgba(10, 25, 47, 0.65) !important;
-    border: 1px solid rgba(57, 255, 20, 0.25) !important;
-    box-shadow: 0 8px 32px 0 rgba(57, 255, 20, 0.1) !important;
-    border-radius: 16px;
-    padding: 2.5rem;
-    margin-top: 1.5rem;
-    backdrop-filter: blur(16px);
-}
-
-.panel-label {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.8rem;
-    font-weight: 700;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    margin-bottom: 1.5rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-.panel-label.orange { color: #00f0ff; border-color: rgba(0, 240, 255, 0.2); }
-.panel-label.green { color: #39ff14; border-color: rgba(57, 255, 20, 0.2); }
-
-.notice {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.75rem;
-    color: #718096;
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.25);
     text-align: center;
     margin-top: 4rem;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.15em;
 }
 </style>
 
-<!-- Absolute Background Video -->
-<video autoplay loop muted playsinline id="bg-video">
-  <source src="https://assets.mixkit.co/videos/preview/mixkit-futuristic-digital-particle-flow-31995-large.mp4" type="video/mp4">
+<video autoplay muted loop id="bg-video">
+    <source src="https://cdn.pixabay.com/video/2020/05/25/40146-425316335_large.mp4" type="video/mp4">
 </video>
-<div id="bg-overlay"></div>
+<div id="bg-overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(3, 8, 15, 0.75); z-index: -99; pointer-events: none;"></div>
 
-<!-- Cursor trail glow effect -->
+<!-- Global cursor glow & trailing script -->
 <script>
 try {
   const doc = window.parent !== window ? window.parent.document : document;
   const win = window.parent !== window ? window.parent : window;
   
-  // Custom cursor container element
-  let glow = doc.getElementById('cursor-glow-element');
+  let glow = doc.getElementById('cyber-glow-pointer');
   if (!glow) {
     glow = doc.createElement('div');
-    glow.id = 'cursor-glow-element';
+    glow.id = 'cyber-glow-pointer';
     Object.assign(glow.style, {
       position: 'fixed',
-      width: '400px',
-      height: '400px',
-      background: 'radial-gradient(circle, rgba(0, 240, 255, 0.16) 0%, rgba(0, 240, 255, 0) 70%)',
+      width: '350px',
+      height: '350px',
+      background: 'radial-gradient(circle, rgba(0, 240, 255, 0.15) 0%, rgba(255, 0, 127, 0.02) 50%, rgba(0,0,0,0) 70%)',
       borderRadius: '50%',
       pointerEvents: 'none',
       zIndex: '999999',
@@ -376,49 +278,45 @@ try {
       left: '-1000px',
       top: '-1000px',
       mixBlendMode: 'screen',
-      transition: 'opacity 0.3s ease'
+      transition: 'opacity 0.2s ease'
     });
     
-    // Bright neon center core
-    const dot = doc.createElement('div');
-    dot.id = 'cursor-glow-dot';
-    Object.assign(dot.style, {
+    const core = doc.createElement('div');
+    Object.assign(core.style, {
       position: 'absolute',
       left: '50%',
       top: '50%',
-      width: '8px',
-      height: '8px',
+      width: '6px',
+      height: '6px',
       background: '#00f0ff',
       borderRadius: '50%',
       transform: 'translate(-50%, -50%)',
-      boxShadow: '0 0 10px #00f0ff, 0 0 20px #00f0ff',
+      boxShadow: '0 0 10px #00f0ff, 0 0 20px #ff007f',
       pointerEvents: 'none'
     });
-    glow.appendChild(dot);
+    glow.appendChild(core);
     
     doc.body.appendChild(glow);
   }
 
-  // Clean up any stale handlers from previous hot-reloads
-  if (win.__researchmind_mousemove) {
-    doc.removeEventListener('mousemove', win.__researchmind_mousemove);
+  if (win.__cyber_mousemove) {
+    doc.removeEventListener('mousemove', win.__cyber_mousemove);
   }
-  if (win.__researchmind_click) {
-    doc.removeEventListener('click', win.__researchmind_click);
+  if (win.__cyber_click) {
+    doc.removeEventListener('click', win.__cyber_click);
   }
 
   let lastX = 0;
   let lastY = 0;
 
-  // New mousemove handler (tracks cursor + spawns floating trail particles)
-  win.__researchmind_mousemove = (e) => {
+  win.__cyber_mousemove = (e) => {
     if (glow) {
       glow.style.left = e.clientX + 'px';
       glow.style.top = e.clientY + 'px';
     }
     
     const dist = Math.hypot(e.clientX - lastX, e.clientY - lastY);
-    if (dist > 15) {
+    if (dist > 20) {
       lastX = e.clientX;
       lastY = e.clientY;
       
@@ -427,39 +325,38 @@ try {
         position: 'fixed',
         width: '4px',
         height: '4px',
-        background: '#00f0ff',
+        background: Math.random() > 0.5 ? '#00f0ff' : '#ff007f',
         borderRadius: '50%',
         pointerEvents: 'none',
         zIndex: '999999',
         left: e.clientX + 'px',
         top: e.clientY + 'px',
         transform: 'translate(-50%, -50%)',
-        boxShadow: '0 0 6px #00f0ff, 0 0 12px #00f0ff',
-        transition: 'all 0.6s cubic-bezier(0.1, 0.8, 0.2, 1)',
-        opacity: '0.8'
+        boxShadow: '0 0 8px #00f0ff',
+        transition: 'all 0.5s cubic-bezier(0.1, 0.8, 0.2, 1)',
+        opacity: '0.85'
       });
       doc.body.appendChild(p);
       
-      const dx = (Math.random() - 0.5) * 8;
-      const dy = (Math.random() - 0.5) * 8;
+      const dx = (Math.random() - 0.5) * 6;
+      const dy = (Math.random() - 0.5) * 6;
       
       setTimeout(() => {
         p.style.transform = `translate(-50%, -50%) translate(${dx}px, ${dy}px) scale(0.1)`;
         p.style.opacity = '0';
       }, 10);
       
-      setTimeout(() => p.remove(), 600);
+      setTimeout(() => p.remove(), 500);
     }
   };
 
-  // New click handler (creates burst effect)
-  win.__researchmind_click = (e) => {
-    for (let i = 0; i < 8; i++) {
+  win.__cyber_click = (e) => {
+    for (let i = 0; i < 6; i++) {
       const p = doc.createElement('div');
       Object.assign(p.style, {
         position: 'fixed',
-        width: '6px',
-        height: '6px',
+        width: '5px',
+        height: '5px',
         background: '#00f0ff',
         borderRadius: '50%',
         pointerEvents: 'none',
@@ -467,13 +364,13 @@ try {
         left: e.clientX + 'px',
         top: e.clientY + 'px',
         transform: 'translate(-50%, -50%)',
-        boxShadow: '0 0 8px #00f0ff, 0 0 16px #00f0ff',
-        transition: 'all 0.5s cubic-bezier(0.1, 0.8, 0.3, 1)'
+        boxShadow: '0 0 10px #00f0ff',
+        transition: 'all 0.4s cubic-bezier(0.1, 0.8, 0.3, 1)'
       });
       doc.body.appendChild(p);
       
       const angle = Math.random() * Math.PI * 2;
-      const speed = Math.random() * 50 + 15;
+      const speed = Math.random() * 40 + 10;
       const dx = Math.cos(angle) * speed;
       const dy = Math.sin(angle) * speed;
       
@@ -481,22 +378,28 @@ try {
         p.style.left = (e.clientX + dx) + 'px';
         p.style.top = (e.clientY + dy) + 'px';
         p.style.opacity = '0';
-        p.style.width = '0px';
-        p.style.height = '0px';
       }, 10);
       
-      setTimeout(() => p.remove(), 500);
+      setTimeout(() => p.remove(), 400);
     }
   };
 
-  // Register listeners
-  doc.addEventListener('mousemove', win.__researchmind_mousemove);
-  doc.addEventListener('click', win.__researchmind_click);
+  doc.addEventListener('mousemove', win.__cyber_mousemove);
+  doc.addEventListener('click', win.__cyber_click);
 
 } catch (err) {
-  console.log("Streamlit parent frame cursor injection error handled: ", err);
+  console.log("Cyberpunk cursor trail error handled: ", err);
 }
 </script>
+"""
+st.markdown(video_html, unsafe_allow_html=True)
+
+# ── Title Header ──
+st.markdown("""
+<div style="padding-top: 1.5rem;">
+    <div class="terminal-eyebrow">Terminal Mainframe // Multi-Agent Pipeline</div>
+    <div class="terminal-title">Research<span>Mind</span></div>
+</div>
 """, unsafe_allow_html=True)
 
 # ── Session state init ────────────────────────────────────────────────────────
@@ -504,66 +407,33 @@ for key in ("results", "running", "done"):
     if key not in st.session_state:
         st.session_state[key] = {} if key == "results" else False
 
-
-# ── Hero ──────────────────────────────────────────────────────────────────────
-st.markdown("""
-<div class="hero">
-    <div class="hero-eyebrow">Terminal Mode · Multi-Agent AI System</div>
-    <h1>Research<span>Mind</span></h1>
-    <div class="hero-badge" style="
-        display: inline-flex;
-        align-items: center;
-        gap: 0.35rem;
-        font-family: 'DM Mono', monospace;
-        font-size: 0.75rem;
-        font-weight: 700;
-        letter-spacing: 0.22em;
-        text-transform: uppercase;
-        color: #00f0ff;
-        background: rgba(0, 240, 255, 0.08);
-        border: 1px solid rgba(0, 240, 255, 0.25);
-        border-radius: 999px;
-        padding: 0.5rem 1.25rem;
-        margin-top: 0.5rem;
-        text-shadow: 0 0 5px rgba(0, 240, 255, 0.3);
-    ">System Status: Active</div>
-    <p class="hero-sub" style="margin-top: 1rem;">
-        Collaborative AI agency designed to execute automated search engine queries, 
-        content scraping, intelligence drafting, and peer critique cycles.
-    </p>
-</div>
-""", unsafe_allow_html=True)
-
-st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
-
-# ── Layout: Input left, Monitor right ─────────────────────────────────────────
+# ── Layout ──
 col_input, col_spacer, col_pipeline = st.columns([5, 0.5, 4])
 
 with col_input:
     st.markdown('<div class="glass-card">', unsafe_allow_html=True)
     topic = st.text_input(
-        "Research Directive",
-        placeholder="e.g. Advancements in Room-Temperature Superconductors 2026",
+        "Enter Directive",
+        placeholder="e.g. LLM Reasoning Models breakthroughs 2026",
         key="topic_input",
-        label_visibility="visible",
     )
-    run_btn = st.button("⚡  Initialize Core Pipeline", use_container_width=True)
+    run_btn = st.button("⚡ Initialize Mainframe Agents", use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
-    # Example chips
+    # Example directives
     st.markdown("""
-    <div style="display:flex;gap:0.65rem;flex-wrap:wrap;margin-bottom:1rem;align-items:center;">
-        <span style="font-family:'DM Mono',monospace;font-size:0.75rem;color:#00f0ff;letter-spacing:0.18em;text-transform:uppercase;">Directives:</span>
+    <div style="display:flex;gap:0.6rem;flex-wrap:wrap;margin-bottom:1rem;align-items:center;">
+        <span style="font-family:'DM Mono',monospace;font-size:0.75rem;color:#00f0ff;letter-spacing:0.18em;">DIRECTIVES:</span>
     """, unsafe_allow_html=True)
-    examples = ["AI Agents 2026", "Nuclear Fusion breakthrough", "CRISPR Therapeutics"]
+    examples = ["Autonomous Agents 2026", "Quantum Encryption breakthrough", "Solid State Batteries"]
     ex_cols = st.columns(len(examples))
     for col, ex in zip(ex_cols, examples):
-        if col.button(ex, key=f"example_{ex}"):
+        if col.button(ex, key=f"ex_{ex}"):
             st.session_state.topic_input = ex
     st.markdown("</div>", unsafe_allow_html=True)
 
 with col_pipeline:
-    st.markdown('<div class="section-heading">Agent Command Center</div>', unsafe_allow_html=True)
+    st.markdown('<div style="font-family:\'Syne\',sans-serif;font-size:1.4rem;font-weight:700;color:#00f0ff;margin:0.5rem 0 1rem;text-shadow:0 0 10px rgba(0,240,255,0.2);">Agent Monitoring Dashboard</div>', unsafe_allow_html=True)
     
     # Placeholders for 4 agents
     p1 = st.empty()
@@ -571,31 +441,29 @@ with col_pipeline:
     p3 = st.empty()
     p4 = st.empty()
 
-# Helper to render the HTML representation of the status card
+# Helper to render the custom HTML representation of the status card
 def agent_card_html(num: str, title: str, state: str, desc: str = "") -> str:
     status_map = {
-        "waiting": ("WAITING", "rgba(255, 255, 255, 0.35)", "rgba(255, 255, 255, 0.05)"),
-        "running": ("WORKING...", "#00f0ff", "rgba(0, 240, 255, 0.1)"),
-        "done":    ("COMPLETED", "#39ff14", "rgba(57, 255, 20, 0.1)"),
+        "waiting": ("WAITING", "rgba(255, 255, 255, 0.35)"),
+        "running": ("WORKING...", "#00f0ff"),
+        "done":    ("COMPLETED ✔", "#39ff14"),
     }
-    label, color, bg = status_map.get(state, ("WAITING", "#fff", "rgba(255,255,255,0.05)"))
+    label, color = status_map.get(state, ("WAITING", "#fff"))
     
     if state == "running":
-        icon = '<div class="neon-spinner"></div>'
+        icon = '<div class="hacker-spinner"></div>'
+        label_html = f'<span class="agent-status-tag" style="color: {color};">{icon} {label}</span>'
     elif state == "done":
-        icon = '<span class="neon-checkmark">✓</span>'
+        label_html = f'<span class="agent-status-tag pulse-completed" style="color: {color};">{label}</span>'
     else:
-        icon = '<span class="neon-dot">•</span>'
+        label_html = f'<span class="agent-status-tag" style="color: {color};">{label}</span>'
         
     return f"""
     <div class="agent-card {state}">
         <div class="agent-card-header">
             <span class="agent-num">{num}</span>
             <span class="agent-title">{title}</span>
-            <div class="agent-icon-wrap" style="color: {color};">
-                {icon}
-                <span class="agent-label" style="color: {color};">{label}</span>
-            </div>
+            {label_html}
         </div>
         <div class="agent-desc">{desc}</div>
     </div>
@@ -604,39 +472,39 @@ def agent_card_html(num: str, title: str, state: str, desc: str = "") -> str:
 def update_pipeline_ui(active_step=None):
     results = st.session_state.results
     
-    # 01 Researcher
+    # 01 Researcher (Search Agent)
     state1 = "waiting"
     if "search" in results:
         state1 = "done"
     elif active_step == "search":
         state1 = "running"
-    p1.markdown(agent_card_html("01", "Researcher", state1, "Searching deep web index databases..."), unsafe_allow_html=True)
+    p1.markdown(agent_card_html("01", "Researcher", state1, "Querying web databases for topic signals..."), unsafe_allow_html=True)
     
-    # 02 Formatter
+    # 02 Formatter (Reader Agent)
     state2 = "waiting"
     if "reader" in results:
         state2 = "done"
     elif active_step == "reader":
         state2 = "running"
-    p2.markdown(agent_card_html("02", "Formatter", state2, "Extracting and scraping content nodes..."), unsafe_allow_html=True)
+    p2.markdown(agent_card_html("02", "Formatter", state2, "Extracting and parsing text nodes..."), unsafe_allow_html=True)
     
-    # 03 Writer
+    # 03 Writer (Writer Chain)
     state3 = "waiting"
     if "writer" in results:
         state3 = "done"
     elif active_step == "writer":
         state3 = "running"
-    p3.markdown(agent_card_html("03", "Writer", state3, "Synthesizing research into structural draft..."), unsafe_allow_html=True)
+    p3.markdown(agent_card_html("03", "Writer", state3, "Drafting report with synthesized research..."), unsafe_allow_html=True)
     
-    # 04 Scorer
+    # 04 Scorer (Critic Chain)
     state4 = "waiting"
     if "critic" in results:
         state4 = "done"
     elif active_step == "critic":
         state4 = "running"
-    p4.markdown(agent_card_html("04", "Scorer", state4, "Reviewing findings against intelligence rules..."), unsafe_allow_html=True)
+    p4.markdown(agent_card_html("04", "Scorer", state4, "Reviewing report and grading quality..."), unsafe_allow_html=True)
 
-# Render initial status cards on screen draw
+# Render initial statuses
 update_pipeline_ui()
 
 def _parse_agent_result(result):
@@ -652,7 +520,7 @@ def _parse_agent_result(result):
         return "\n".join(str(item) for item in result)
     return str(result)
 
-# ── Run Pipeline ──────────────────────────────────────────────────────────────
+# ── Core Pipeline Execution ──
 if run_btn:
     if not topic.strip():
         st.warning("Please specify a core directive first.")
@@ -667,7 +535,7 @@ if st.session_state.running and not st.session_state.done:
     topic_val = st.session_state.topic_input
 
     try:
-        # ── Step 1: Search ──
+        # ── Step 1: Researcher ──
         update_pipeline_ui("search")
         search_agent = build_search_agent()
         sr = search_agent.invoke(
@@ -677,7 +545,7 @@ if st.session_state.running and not st.session_state.done:
         st.session_state.results = dict(results)
         update_pipeline_ui()
 
-        # ── Step 2: Reader ──
+        # ── Step 2: Formatter ──
         update_pipeline_ui("reader")
         reader_agent = build_reader_agent()
         rr = reader_agent.invoke(
@@ -704,7 +572,7 @@ if st.session_state.running and not st.session_state.done:
         st.session_state.results = dict(results)
         update_pipeline_ui()
 
-        # ── Step 4: Critic ──
+        # ── Step 4: Scorer ──
         update_pipeline_ui("critic")
         results["critic"] = _parse_agent_result(
             build_critic_chain().invoke({"report": results["writer"]})
@@ -720,57 +588,56 @@ if st.session_state.running and not st.session_state.done:
         st.session_state.running = False
         st.session_state.done = False
 
-# ── Results display ───────────────────────────────────────────────────────────
+# ── Output rendering ──
 r = st.session_state.results
 
 if r:
     st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
-    st.markdown('<div class="section-heading">Intelligence Feeds</div>', unsafe_allow_html=True)
+    st.markdown('<div style="font-family:\'Syne\',sans-serif;font-size:1.6rem;font-weight:800;color:#00f0ff;text-shadow:0 0 10px rgba(0,240,255,0.2);margin-bottom:1rem;">Retrieved Intelligence Dossier</div>', unsafe_allow_html=True)
 
     col_raw, col_final = st.columns([4, 6])
     
     with col_raw:
-        # Raw outputs in expanders
         if "search" in r:
             with st.expander("🔍 Search Signals (Raw)", expanded=False):
-                st.markdown(f'<div class="result-panel"><div class="result-panel-title">Researcher Output</div>'
-                            f'<div class="result-content">{r["search"]}</div></div>', unsafe_allow_html=True)
+                st.markdown(f'<div style="background:rgba(5,12,24,0.5);border:1px solid rgba(0,240,255,0.15);border-radius:12px;padding:1.5rem;">'
+                            f'<div style="font-family:\'DM Mono\',monospace;font-size:0.8rem;color:#00f0ff;border-bottom:1px solid rgba(0,240,255,0.15);padding-bottom:0.5rem;margin-bottom:1rem;">Researcher Output</div>'
+                            f'<div style="white-space:pre-wrap;font-size:0.9rem;color:#d1dbed;line-height:1.6;">{r["search"]}</div></div>', unsafe_allow_html=True)
 
         if "reader" in r:
             with st.expander("📄 Scraped Data (Raw)", expanded=False):
-                st.markdown(f'<div class="result-panel"><div class="result-panel-title">Formatter Output</div>'
-                            f'<div class="result-content">{r["reader"]}</div></div>', unsafe_allow_html=True)
+                st.markdown(f'<div style="background:rgba(5,12,24,0.5);border:1px solid rgba(0,240,255,0.15);border-radius:12px;padding:1.5rem;">'
+                            f'<div style="font-family:\'DM Mono\',monospace;font-size:0.8rem;color:#00f0ff;border-bottom:1px solid rgba(0,240,255,0.15);padding-bottom:0.5rem;margin-bottom:1rem;">Formatter Output</div>'
+                            f'<div style="white-space:pre-wrap;font-size:0.9rem;color:#d1dbed;line-height:1.6;">{r["reader"]}</div></div>', unsafe_allow_html=True)
 
     with col_final:
-        # Final report
         if "writer" in r:
             st.markdown("""
-            <div class="report-panel">
-                <div class="panel-label orange">📝 Output: Intelligence Report</div>
+            <div class="output-card-writer">
+                <div class="output-label orange">📝 Output: Intelligence Report</div>
             """, unsafe_allow_html=True)
-            st.markdown(r["writer"])   # render markdown natively
+            st.markdown(r["writer"])
             st.markdown("</div>", unsafe_allow_html=True)
 
             # Download
             st.download_button(
-                label="⬇  Export Dossier (.md)",
+                label="⬇ Export Dossier (.md)",
                 data=r["writer"],
                 file_name=f"dossier_{int(time.time())}.md",
                 mime="text/markdown",
             )
 
-        # Critic feedback
         if "critic" in r:
             st.markdown("""
-            <div class="feedback-panel">
-                <div class="panel-label green">🧐 Output: Quality Score & Evaluation</div>
+            <div class="output-card-critic">
+                <div class="output-label green">🧐 Output: Quality Score & Evaluation</div>
             """, unsafe_allow_html=True)
             st.markdown(r["critic"])
             st.markdown("</div>", unsafe_allow_html=True)
 
-# ── Footer ────────────────────────────────────────────────────────────────────
+# ── Footer ──
 st.markdown("""
-<div class="notice">
-    ResearchMind Autonomous Terminal · Core v2.0 · Secured Connection
+<div class="notice-footer">
+    ResearchMind Terminal v2.5 // Secured Mainframe Connection
 </div>
 """, unsafe_allow_html=True)
