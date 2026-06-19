@@ -357,8 +357,9 @@ body {
 <script>
 try {
   const doc = window.parent !== window ? window.parent.document : document;
+  const win = window.parent !== window ? window.parent : window;
   
-  // Custom cursor element
+  // Custom cursor container element
   let glow = doc.getElementById('cursor-glow-element');
   if (!glow) {
     glow = doc.createElement('div');
@@ -367,7 +368,7 @@ try {
       position: 'fixed',
       width: '400px',
       height: '400px',
-      background: 'radial-gradient(circle, rgba(0, 240, 255, 0.06) 0%, rgba(0, 240, 255, 0) 70%)',
+      background: 'radial-gradient(circle, rgba(0, 240, 255, 0.16) 0%, rgba(0, 240, 255, 0) 70%)',
       borderRadius: '50%',
       pointerEvents: 'none',
       zIndex: '999999',
@@ -377,17 +378,82 @@ try {
       mixBlendMode: 'screen',
       transition: 'opacity 0.3s ease'
     });
+    
+    // Bright neon center core
+    const dot = doc.createElement('div');
+    dot.id = 'cursor-glow-dot';
+    Object.assign(dot.style, {
+      position: 'absolute',
+      left: '50%',
+      top: '50%',
+      width: '8px',
+      height: '8px',
+      background: '#00f0ff',
+      borderRadius: '50%',
+      transform: 'translate(-50%, -50%)',
+      boxShadow: '0 0 10px #00f0ff, 0 0 20px #00f0ff',
+      pointerEvents: 'none'
+    });
+    glow.appendChild(dot);
+    
     doc.body.appendChild(glow);
   }
 
-  // Handle cursor moves
-  doc.addEventListener('mousemove', (e) => {
-    glow.style.left = e.clientX + 'px';
-    glow.style.top = e.clientY + 'px';
-  });
+  // Clean up any stale handlers from previous hot-reloads
+  if (win.__researchmind_mousemove) {
+    doc.removeEventListener('mousemove', win.__researchmind_mousemove);
+  }
+  if (win.__researchmind_click) {
+    doc.removeEventListener('click', win.__researchmind_click);
+  }
 
-  // Tap/Click particle bursting
-  doc.addEventListener('click', (e) => {
+  let lastX = 0;
+  let lastY = 0;
+
+  // New mousemove handler (tracks cursor + spawns floating trail particles)
+  win.__researchmind_mousemove = (e) => {
+    if (glow) {
+      glow.style.left = e.clientX + 'px';
+      glow.style.top = e.clientY + 'px';
+    }
+    
+    const dist = Math.hypot(e.clientX - lastX, e.clientY - lastY);
+    if (dist > 15) {
+      lastX = e.clientX;
+      lastY = e.clientY;
+      
+      const p = doc.createElement('div');
+      Object.assign(p.style, {
+        position: 'fixed',
+        width: '4px',
+        height: '4px',
+        background: '#00f0ff',
+        borderRadius: '50%',
+        pointerEvents: 'none',
+        zIndex: '999999',
+        left: e.clientX + 'px',
+        top: e.clientY + 'px',
+        transform: 'translate(-50%, -50%)',
+        boxShadow: '0 0 6px #00f0ff, 0 0 12px #00f0ff',
+        transition: 'all 0.6s cubic-bezier(0.1, 0.8, 0.2, 1)',
+        opacity: '0.8'
+      });
+      doc.body.appendChild(p);
+      
+      const dx = (Math.random() - 0.5) * 8;
+      const dy = (Math.random() - 0.5) * 8;
+      
+      setTimeout(() => {
+        p.style.transform = `translate(-50%, -50%) translate(${dx}px, ${dy}px) scale(0.1)`;
+        p.style.opacity = '0';
+      }, 10);
+      
+      setTimeout(() => p.remove(), 600);
+    }
+  };
+
+  // New click handler (creates burst effect)
+  win.__researchmind_click = (e) => {
     for (let i = 0; i < 8; i++) {
       const p = doc.createElement('div');
       Object.assign(p.style, {
@@ -421,13 +487,17 @@ try {
       
       setTimeout(() => p.remove(), 500);
     }
-  });
+  };
+
+  // Register listeners
+  doc.addEventListener('mousemove', win.__researchmind_mousemove);
+  doc.addEventListener('click', win.__researchmind_click);
+
 } catch (err) {
   console.log("Streamlit parent frame cursor injection error handled: ", err);
 }
 </script>
 """, unsafe_allow_html=True)
-
 
 # ── Session state init ────────────────────────────────────────────────────────
 for key in ("results", "running", "done"):
